@@ -1,15 +1,13 @@
 ## Inference using trained ML model for the app of aerosol emulation 
 ## by Z.Bai, zhebai@lbl.gov
 
-import os
 import numpy as np
 import pickle
-import matplotlib.pyplot as plt
-from sklearn.metrics import r2_score
 from torchvision import transforms
 from time import perf_counter
 from utils import *
-import nexport
+# import nexport
+from nexport import utils as nx
 
 torch.manual_seed(42)
 torch.backends.cudnn.benchmark = True
@@ -82,12 +80,15 @@ if __name__ == "__main__":
     data_path = '../test/X_test5.npy'
     t0_start = perf_counter()
     inference_model = InferenceModel(model_path, device='cuda' if torch.cuda.is_available() else 'cpu')
-    nexport.export(inference_model.model,"json_exp",  include_metadata=True, model_name="E3SM", model_author="Zhe Bai", activation_function="gelu", using_skip_connections=False)
-    # t0_stop = perf_counter()
-    # print("Elapsed time for loading the inference model in seconds:", t0_stop-t0_start)
-    # t1_start = perf_counter()
-    # output = inference_model.predict(data_path)
-    # t1_stop = perf_counter()
-    # print("Elapsed time for predicting output in seconds:", t1_stop-t1_start)
+    nx.export(inference_model.model,"json_exp",
+              80, 31, minima=0.0, maxima=1.0,
+              include_metadata=True, model_name="E3SM", model_author="Zhe Bai", activation_function="gelu",
+              using_skip_connections=False)
+
+    # nexport.export(inference_model.model,"json_exp",  include_metadata=True, model_name="E3SM", model_author="Zhe
+    # Bai", activation_function="gelu", using_skip_connections=False) t0_stop = perf_counter() print("Elapsed time
+    # for loading the inference model in seconds:", t0_stop-t0_start) t1_start = perf_counter() output =
+    # inference_model.predict(data_path) t1_stop = perf_counter() print("Elapsed time for predicting output in
+    # seconds:", t1_stop-t1_start)
     #
     # print(output)
