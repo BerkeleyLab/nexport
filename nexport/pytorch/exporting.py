@@ -40,20 +40,20 @@ def export_to_file(model: object, filename: str = "model") -> None:
     filename = nexport.append_extension(filename=filename, extension='txt')
     print(f"Creating file: {c.YELLOW}{filename}{c.DEFAULT}")
     f = open(filename, "w")
-    for x, y in enumerate(model.parameters()): # access parameter array
-        if (x % 2 != 1): # if array is not odd (even index = weights)
-            print(f"Extracting {c.GREEN}weights{c.DEFAULT} from layer {c.RED}{(int(x/2))+1}{c.DEFAULT}")
-            for i, z in enumerate(y): # access weight array x in layer y
+    for x, y in enumerate(model.parameters()):  # access parameter array
+        if (x % 2 != 1):  # if array is not odd (even index = weights)
+            print(f"Extracting {c.GREEN}weights{c.DEFAULT} from layer {c.RED}{(int(x / 2)) + 1}{c.DEFAULT}")
+            for i, z in enumerate(y):  # access weight array x in layer y
                 f.write("[") if i == 0 else f.write(" ")
                 weights = []
-                for w in z: # access weights for neuron w in from neuron z in layer y
+                for w in z:  # access weights for neuron w in from neuron z in layer y
                     weights.append(float(w))
                 f.write(str(weights))
                 f.write("]") if i == len(y) - 1 else f.write("")
                 f.write("\n")
             f.write("\n")
-        else: # if array is odd (odd index = biases)
-            print(f"Extracting {c.MAGENTA}biases{c.DEFAULT} from layer  {c.RED}{(int(x/2))+1}{c.DEFAULT}")
+        else:  # if array is odd (odd index = biases)
+            print(f"Extracting {c.MAGENTA}biases{c.DEFAULT} from layer  {c.RED}{(int(x / 2)) + 1}{c.DEFAULT}")
             biases = []
             for b in y:
                 biases.append(float(b))
@@ -64,7 +64,7 @@ def export_to_file(model: object, filename: str = "model") -> None:
     print(f"{c.CYAN}Done!{c.DEFAULT}")
 
 
-def create_paramater_arrays(model:object, verbose: int = None) -> tuple:
+def create_paramater_arrays(model: object, verbose: int = None) -> tuple:
     """
     Function which splits a model's state_dict into weight
     and bias arrays and returns them for indexing elsewhere.
@@ -75,15 +75,15 @@ def create_paramater_arrays(model:object, verbose: int = None) -> tuple:
 
     # Loop which creates parameter arrays from model's state_dict
     for x, item in enumerate(model_dictionary):
-        if x % 2 == 0: # if even (weight)
+        if x % 2 == 0:  # if even (weight)
             weights.append(model_dictionary[item])
-        else: # if odd (bias)
+        else:  # if odd (bias)
             biases.append(model_dictionary[item])
 
-    if verbose >= 2: # if verbose set to at least 2
+    if verbose >= 2:  # if verbose set to at least 2
         print(f"{c.RED}Successfully extracted {c.LIGHTRED}parameters.{c.DEFAULT}")
 
-    return weights, biases # return weights & biases as tuple
+    return weights, biases  # return weights & biases as tuple
 
 
 def create_layer_object(weights: list, biases: list, verbose: int = None) -> list:
@@ -95,7 +95,7 @@ def create_layer_object(weights: list, biases: list, verbose: int = None) -> lis
     temp_weights = []
     temp_bias = 0
     temp_dict = {}
-    
+
     # Loop which creates a layer as a list from parameter arrays
     for i in range(len(weights)):
         for j in weights[i]:
@@ -107,13 +107,14 @@ def create_layer_object(weights: list, biases: list, verbose: int = None) -> lis
         temp_weights.clear()
         temp_dict.clear()
 
-    if verbose >= 3: # if verbose set to at least 3
+    if verbose >= 3:  # if verbose set to at least 3
         print(f"{c.LIGHTYELLOW}    Layer created.{c.DEFAULT}")
 
-    return neuron_list # return constructed layer
+    return neuron_list  # return constructed layer
 
 
-def create_model_metadata(model_name: str, model_author: str = None, activation_function: str = None, using_skip_connections: bool = None) -> dict:
+def create_model_metadata(model_name: str, model_author: str = None, activation_function: str = None,
+                          using_skip_connections: bool = None) -> dict:
     model_metadata = {
         "modelName": model_name,
         "modelAuthor": model_author,
@@ -122,10 +123,23 @@ def create_model_metadata(model_name: str, model_author: str = None, activation_
         "usingSkipConnections": using_skip_connections
     }
 
-    return model_metadata # return model metadata object
+    return model_metadata  # return model metadata object
 
 
-def create_model_object(model: object, verbose: int = None, include_metadata: bool = None, model_name: str = None, model_author: str = None, activation_function: str = None, using_skip_connections: bool = None) -> object:
+def create_data_normalization_metadata(data_length: int, minima: float = 0.0, maxima: float = 1.0,
+                                       layer_label: str = None) -> dict:
+    model_metadata = {
+        "layer": layer_label,
+        "minima": [minima for _ in range(data_length)],
+        "maxima": [maxima for _ in range(data_length)],
+    }
+
+    return model_metadata  # return model metadata object
+
+
+def create_model_object(model: object, verbose: int = None, include_metadata: bool = None, model_name: str = None,
+                        model_author: str = None, activation_function: str = None,
+                        using_skip_connections: bool = None) -> object:
     """
     Function which creates a model object from a
     collection of layers instantiated with layer
@@ -136,29 +150,33 @@ def create_model_object(model: object, verbose: int = None, include_metadata: bo
     model_object = {}
     weights, biases = create_paramater_arrays(model=model, verbose=verbose)
 
-    if include_metadata: # insert model metadata into model object
-        model_object["metadata"] = create_model_metadata(model_name=model_name, model_author=model_author, activation_function=activation_function, using_skip_connections=using_skip_connections)
+    if include_metadata:  # insert model metadata into model object
+        model_object["metadata"] = create_model_metadata(model_name=model_name, model_author=model_author,
+                                                         activation_function=activation_function,
+                                                         using_skip_connections=using_skip_connections)
 
-    if verbose >= 3: # if verbose set to at least 3
+    if verbose >= 3:  # if verbose set to at least 3
         print(f"{c.YELLOW}Creating layers...{c.DEFAULT}")
 
     # Loop which creates a network object from a series of single-layer lists
     for x, layer in enumerate(weights):
-        if x != len(weights)-1:
+        if x != len(weights) - 1:
             hidden_layers.append(create_layer_object(weights=weights[x], biases=biases[x], verbose=verbose))
         else:
             output_layer = create_layer_object(weights=weights[x], biases=biases[x], verbose=verbose)
-    
+
     model_object["hidden_layers"] = hidden_layers
     model_object["output_layer"] = output_layer
 
-    if verbose >= 2: # if verbose set to at least 2
+    if verbose >= 2:  # if verbose set to at least 2
         print(f"{c.GREEN}Successfully created {c.LIGHTGREEN}model object.{c.DEFAULT}")
 
-    return model_object # return constructed network
+    return model_object  # return constructed network
 
 
-def export_to_json(model: object, filename: str = None, indent: int = None, verbose: int = None, include_metadata: bool = None, model_name: str = None, model_author: str = None, activation_function: str = None, using_skip_connections: bool = None) -> None:
+def export_to_json(model: object, filename: str = None, indent: int = None, verbose: int = None,
+                   include_metadata: bool = None, model_name: str = None, model_author: str = None,
+                   activation_function: str = None, using_skip_connections: bool = None) -> None:
     """
     Function which exports a passed model
     object to a JSON file.
@@ -166,7 +184,10 @@ def export_to_json(model: object, filename: str = None, indent: int = None, verb
     t1 = t.time()
     model_object = {}
     if include_metadata:
-        model_object = create_model_object(model=model, verbose=verbose, include_metadata=include_metadata, model_name=model_name, model_author=model_author, activation_function=activation_function, using_skip_connections=using_skip_connections)
+        model_object = create_model_object(model=model, verbose=verbose, include_metadata=include_metadata,
+                                           model_name=model_name, model_author=model_author,
+                                           activation_function=activation_function,
+                                           using_skip_connections=using_skip_connections)
     else:
         model_object = create_model_object(model=model, verbose=verbose)
     json_object = json.dumps(obj=model_object, indent=indent)
@@ -177,13 +198,18 @@ def export_to_json(model: object, filename: str = None, indent: int = None, verb
     t2 = t.time()
     time = t2 - t1
 
-    if verbose >= 1: # if verbose set to at least 1
-        print(f"{c.CYAN}Exported model to {c.LIGHTCYAN}'{nexport.append_extension(filename=filename, extension='json')}'{c.CYAN}!{c.DEFAULT}")
-    if verbose >= 2: # if verbose set to at least 2
+    if verbose >= 1:  # if verbose set to at least 1
+        print(
+            f"{c.CYAN}Exported model to {c.LIGHTCYAN}'{nexport.append_extension(filename=filename, extension='json')}'{c.CYAN}!{c.DEFAULT}")
+    if verbose >= 2:  # if verbose set to at least 2
         print(f"{c.MAGENTA}    Time taken: {c.LIGHTMAGENTA}{round(time, 2)}{c.MAGENTA}s{c.DEFAULT}")
 
 
-def export_to_json_experimental(model: object, filename: str = None, indent: int = None, verbose: int = None, include_metadata: bool = None, model_name: str = None, model_author: str = None, activation_function: str = None, using_skip_connections: bool = None) -> None:
+def export_to_json_experimental(model: object, filename: str = None, indent: int = None, verbose: int = None,
+                                include_metadata: bool = None, model_name: str = None, model_author: str = None,
+                                activation_function: str = None, using_skip_connections: bool = None,
+                                input_size: int = None, output_size: int = None, minima: int = 0.0,
+                                maxima: int = 1.0) -> None:
     """
     Function which exports a passed
     model object to a JSON file, but
@@ -191,7 +217,17 @@ def export_to_json_experimental(model: object, filename: str = None, indent: int
     """
     t1 = t.time()
     model_object = create_model_object(model=model, verbose=verbose)
-    model_metadata = create_model_metadata(model_name=model_name, model_author=model_author, activation_function=activation_function, using_skip_connections=using_skip_connections)
+    model_metadata = create_model_metadata(model_name=model_name, model_author=model_author,
+                                           activation_function=activation_function,
+                                           using_skip_connections=using_skip_connections)
+    model_input_normalization_metadata = create_data_normalization_metadata(data_length=input_size,
+                                                                            minima=minima,
+                                                                            maxima=maxima,
+                                                                            layer_label="inputs")
+    model_output_normalization_metadata = create_data_normalization_metadata(data_length=output_size,
+                                                                             minima=minima,
+                                                                             maxima=maxima,
+                                                                             layer_label="outputs")
     indent = "    "
 
     with open(nexport.append_extension(filename=filename, extension="json"), "w") as outfile:
@@ -210,6 +246,51 @@ def export_to_json_experimental(model: object, filename: str = None, indent: int
                 else:
                     outfile.write("\n")
             outfile.write(f"{indent}" + "},\n")
+
+            input_normalization_key = "inputs_range"
+            output_normalization_key = "outputs_range"
+
+            outfile.write(f"{indent}\"{input_normalization_key}\": " + "{\n")
+            for d, data in enumerate(model_input_normalization_metadata.keys()):
+                if type(model_input_normalization_metadata[data]) is str:
+                    outfile.write(f"{indent}{indent}\"{data}\": \"{model_input_normalization_metadata[data]}\"")
+                else:
+                    outfile.write(f"{indent}{indent}\"{data}\": [")
+                    for z, parameter in enumerate(model_input_normalization_metadata[data]):
+                        if z < len(model_input_normalization_metadata[data]) - 1:
+                            outfile.write(f"{parameter}, ")
+                        else:
+                            outfile.write(f"{parameter}")
+                    outfile.write(f"]")
+
+                if d < len(model_input_normalization_metadata.keys()) - 1:
+                    outfile.write(f",\n")
+                else:
+                    outfile.write(f"\n")
+
+
+            outfile.write(f"{indent}" + "},\n")
+
+            outfile.write(f"{indent}\"{output_normalization_key}\": " + "{\n")
+            for d, data in enumerate(model_output_normalization_metadata.keys()):
+                if type(model_output_normalization_metadata[data]) is str:
+                    outfile.write(f"{indent}{indent}\"{data}\": \"{model_output_normalization_metadata[data]}\"")
+                else:
+                    outfile.write(f"{indent}{indent}\"{data}\": [")
+                    for z, parameter in enumerate(model_output_normalization_metadata[data]):
+                        if z < len(model_output_normalization_metadata[data]) - 1:
+                            outfile.write(f"{parameter}, ")
+                        else:
+                            outfile.write(f"{parameter}")
+                    outfile.write(f"]")
+
+                if d < len(model_output_normalization_metadata.keys()) - 1:
+                    outfile.write(f",\n")
+                else:
+                    outfile.write(f"\n")
+
+            outfile.write(f"{indent}" + "},\n")
+
         for layer_type in model_object.keys():
             if layer_type == "hidden_layers":
                 outfile.write(f"{indent}\"{layer_type}\": [\n")
@@ -222,21 +303,22 @@ def export_to_json_experimental(model: object, filename: str = None, indent: int
                                 outfile.write(f"{indent}{indent}{indent}{indent}\"{param_type}\": [")
                                 for z, parameter in enumerate(neuron[param_type]):
                                     if z < len(neuron[param_type]) - 1:
-                                        outfile.write(f"{parameter}, ") # weight array
+                                        outfile.write(f"{parameter}, ")  # weight array
                                     else:
-                                        outfile.write(f"{parameter}") # last weight array element
+                                        outfile.write(f"{parameter}")  # last weight array element
                                 outfile.write(f"],\n")
                             if param_type == "bias":
-                                outfile.write(f"{indent}{indent}{indent}{indent}\"{param_type}\": {neuron[param_type]}\n")
+                                outfile.write(
+                                    f"{indent}{indent}{indent}{indent}\"{param_type}\": {neuron[param_type]}\n")
                         if y < len(layer) - 1:
-                            outfile.write(f"{indent}{indent}{indent}" + "},\n") # end of neuron
+                            outfile.write(f"{indent}{indent}{indent}" + "},\n")  # end of neuron
                         else:
-                            outfile.write(f"{indent}{indent}{indent}" + "}\n") # last neuron array element
+                            outfile.write(f"{indent}{indent}{indent}" + "}\n")  # last neuron array element
                     if x < len(model_object[layer_type]) - 1:
-                        outfile.write(f"{indent}{indent}],\n") # end of layer
+                        outfile.write(f"{indent}{indent}],\n")  # end of layer
                     else:
-                        outfile.write(f"{indent}{indent}]\n") # last layer array element
-                outfile.write(f"{indent}],\n") # end of hidden layer array
+                        outfile.write(f"{indent}{indent}]\n")  # last layer array element
+                outfile.write(f"{indent}],\n")  # end of hidden layer array
             if layer_type == "output_layer":
                 outfile.write(f"{indent}\"{layer_type}\": [\n")
                 for n, neuron in enumerate(model_object[layer_type]):
@@ -246,9 +328,9 @@ def export_to_json_experimental(model: object, filename: str = None, indent: int
                             outfile.write(f"{indent}{indent}{indent}\"{param_type}\": [")
                             for z, parameter in enumerate(neuron[param_type]):
                                 if z < len(neuron[param_type]) - 1:
-                                    outfile.write(f"{parameter}, ") # weight array
+                                    outfile.write(f"{parameter}, ")  # weight array
                                 else:
-                                    outfile.write(f"{parameter}") # last weight array alement
+                                    outfile.write(f"{parameter}")  # last weight array alement
                             outfile.write(f"],\n")
                         if param_type == "bias":
                             outfile.write(f"{indent}{indent}{indent}\"{param_type}\": {neuron[param_type]}\n")
@@ -262,7 +344,8 @@ def export_to_json_experimental(model: object, filename: str = None, indent: int
     t2 = t.time()
     time = t2 - t1
 
-    if verbose >= 1: # if verbose set to at least 1
-        print(f"{c.CYAN}Exported model to {c.LIGHTCYAN}'{nexport.append_extension(filename=filename, extension='json')}'{c.CYAN}!{c.DEFAULT}")
-    if verbose >= 2: # if verbose set to at least 2
+    if verbose >= 1:  # if verbose set to at least 1
+        print(
+            f"{c.CYAN}Exported model to {c.LIGHTCYAN}'{nexport.append_extension(filename=filename, extension='json')}'{c.CYAN}!{c.DEFAULT}")
+    if verbose >= 2:  # if verbose set to at least 2
         print(f"{c.MAGENTA}    Time taken: {c.LIGHTMAGENTA}{round(time, 2)}{c.MAGENTA}s{c.DEFAULT}")
