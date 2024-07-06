@@ -16,3 +16,6 @@ nexport.egg-info/
 *.txt
 *.xml
 test.py
+*.npy
+*.pkl
+*.pth
