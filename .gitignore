@@ -19,3 +19,4 @@ test.py
 *.npy
 *.pkl
 *.pth
+.idea/
