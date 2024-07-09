@@ -115,8 +115,38 @@ nexport is a lightweight `Python 3.10+` package which empowers deep learning dev
 
 1. From terminal:
 `pip install nexport`
+Or clone the repository to local and navigate to project folder
+`pip install .`
 2. From python environment:
 `import nexport`
+3. Call function via:
+`nexport.export(...)`
+
+The example of using this function call is located in `test/src/inference_example.py`. To run it, you need to download the `model` folder in [Google Drive](https://drive.google.com/drive/folders/1GDuu84BkBglivZOjfojGY2_dYymmn3uu?usp=sharing),
+and place it under `test` folder. 
+
+For current version, it is recommended to address all the following specified the parameters:
+```doctest
+nexport.export(
+              model = YOUR_PYTORCH_MODEL,
+              filetype = "json_exp",
+              input_size = 80, output_size = 31, minima=0.0, maxima=1.0,
+              include_metadata=True, model_name="YOUR_PYTORCH_MODEL_NAME", model_author="YOUR_PYTORCH_MODEL_AUTHOR", activation_function="gelu",
+              using_skip_connections=False)
+```
+`model`: **Required**. A pytroch model instance.
+
+`file_type`: **Required**. Mandatory to put `json_exp` for now
+
+`input_size` and `output_size`: **Required**. The input and output size of your model
+
+`minima` and `maxima`: the normalization boundary for input and output data. If no normalization, you can leave it without specifying them.
+
+`include_metadata`: **Required**. If `True`, the final `json` file will have the metadata. Mandatory to put `True` for now.
+
+`model_name, model_author, activation_function`: not mandatory but recommend to put some text in there.
+
+`using_skip_connections`: should be `false` in most cases.
 
 <!--
 
