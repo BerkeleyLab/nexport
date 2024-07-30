@@ -122,8 +122,7 @@ Or clone the repository to local and navigate to project folder
 3. Call function via:
 `nexport.export(...)`
 
-The example of using this function call is located in `test/src/inference_example.py`. To run it, you need to download the `model` folder in [Google Drive](https://drive.google.com/drive/folders/1GDuu84BkBglivZOjfojGY2_dYymmn3uu?usp=sharing),
-and place it under `test` folder. 
+The example of using this function call is located in `test/src/inference_example.py`. To run it, you need to provide a network trained by PyTorch and place it under the `test` folder. 
 
 For current version, it is recommended to address all the following specified the parameters:
 ```doctest
