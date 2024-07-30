@@ -17,7 +17,7 @@
 
 
 # Dunder attributes
-__version__ = "v0.4.6" # update setup.py
+__version__ = "v0.4.7" # update setup.py
 __author__ = "Jordan Welsman"
 
 # Import submodules so submodule functions

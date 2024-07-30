@@ -20,7 +20,7 @@
 from setuptools import setup
 
 # Arguments
-version = "0.4.6" # update __init__.py
+version = "0.4.7" # update __init__.py
 python_version = ">=3.10"
 
 # Long description from README.md
