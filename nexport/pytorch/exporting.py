@@ -247,8 +247,8 @@ def export_to_json_experimental(model: object, filename: str = None, indent: int
                     outfile.write("\n")
             outfile.write(f"{indent}" + "},\n")
 
-            input_normalization_key = "inputs_range"
-            output_normalization_key = "outputs_range"
+            input_normalization_key = "inputs_map"
+            output_normalization_key = "outputs_map"
 
             outfile.write(f"{indent}\"{input_normalization_key}\": " + "{\n")
             for d, data in enumerate(model_input_normalization_metadata.keys()):
