@@ -54,7 +54,7 @@ def detect_framework(imported: object = sys.modules.keys()) -> str:
         return "none"
 
 
-def export(model: object, filetype: str, input_size: int, output_size: int, filename: str = "model", indent: int = 4, verbose: int = 1, include_metadata: bool = False, model_name: str = "My Model", model_author: str = None, activation_function: str = None, using_skip_connections: bool = None, minima: float = 0.0, maxima: float = 1.0) -> None:
+def export(model: object, filetype: str, input_size: int, output_size: int, filename: str = "model", indent: int = 4, verbose: int = 1, include_metadata: bool = False, model_name: str = "My Model", model_author: str = None, activation_function: str = None, using_skip_connections: bool = None, intercept: float = 0.0, slope: float = 1.0) -> None:
     match nexport.__framework__:
         case "pytorch":
             match filetype:
@@ -72,7 +72,7 @@ def export(model: object, filetype: str, input_size: int, output_size: int, file
                                                      model_author=model_author, activation_function=activation_function.lower(),
                                                      using_skip_connections=using_skip_connections,
                                                      input_size=input_size, output_size=output_size,
-                                                     minima=minima, maxima=maxima)
+                                                     intercept=intercept, slope=slope)
                 case "csv" | "xml":
                         raise NotImplementedError(f"This feature (exporting {nexport.__framework__} in {filetype}) has not yet been implemented.")
                 case other:

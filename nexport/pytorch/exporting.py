@@ -126,12 +126,12 @@ def create_model_metadata(model_name: str, model_author: str = None, activation_
     return model_metadata  # return model metadata object
 
 
-def create_data_normalization_metadata(data_length: int, minima: float = 0.0, maxima: float = 1.0,
+def create_data_normalization_metadata(data_length: int, intercept: float = 0.0, slope: float = 1.0,
                                        layer_label: str = None) -> dict:
     model_metadata = {
         "layer": layer_label,
-        "minima": [minima for _ in range(data_length)],
-        "maxima": [maxima for _ in range(data_length)],
+        "intercept": [intercept for _ in range(data_length)],
+        "slope": [slope for _ in range(data_length)],
     }
 
     return model_metadata  # return model metadata object
@@ -208,8 +208,8 @@ def export_to_json(model: object, filename: str = None, indent: int = None, verb
 def export_to_json_experimental(model: object, filename: str = None, indent: int = None, verbose: int = None,
                                 include_metadata: bool = None, model_name: str = None, model_author: str = None,
                                 activation_function: str = None, using_skip_connections: bool = None,
-                                input_size: int = None, output_size: int = None, minima: int = 0.0,
-                                maxima: int = 1.0) -> None:
+                                input_size: int = None, output_size: int = None, intercept: float = 0.0,
+                                slope: float = 1.0) -> None:
     """
     Function which exports a passed
     model object to a JSON file, but
@@ -221,12 +221,12 @@ def export_to_json_experimental(model: object, filename: str = None, indent: int
                                            activation_function=activation_function,
                                            using_skip_connections=using_skip_connections)
     model_input_normalization_metadata = create_data_normalization_metadata(data_length=input_size,
-                                                                            minima=minima,
-                                                                            maxima=maxima,
+                                                                            intercept=intercept,
+                                                                            slope=slope,
                                                                             layer_label="inputs")
     model_output_normalization_metadata = create_data_normalization_metadata(data_length=output_size,
-                                                                             minima=minima,
-                                                                             maxima=maxima,
+                                                                             intercept=intercept,
+                                                                             slope=slope,
                                                                              layer_label="outputs")
     indent = "    "
 
