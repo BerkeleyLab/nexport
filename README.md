@@ -129,7 +129,7 @@ For current version, it is recommended to address all the following specified th
 nexport.export(
               model = YOUR_PYTORCH_MODEL,
               filetype = "json_exp",
-              input_size = 80, output_size = 31, minima=0.0, maxima=1.0,
+              input_size = 80, output_size = 31, intercept=0.0, slope=1.0,
               include_metadata=True, model_name="YOUR_PYTORCH_MODEL_NAME", model_author="YOUR_PYTORCH_MODEL_AUTHOR", activation_function="gelu",
               using_skip_connections=False)
 ```
@@ -139,7 +139,7 @@ nexport.export(
 
 `input_size` and `output_size`: **Required**. The input and output size of your model
 
-`minima` and `maxima`: the normalization boundary for input and output data. If no normalization, you can leave it without specifying them.
+`intercept` and `slope`: the normalization boundary for input and output data. If no normalization, you can leave it without specifying them. The formula is `x = (slope - intercept) * y + intercept`, where `y` is normalized value and `x` is original data.
 
 `include_metadata`: **Required**. If `True`, the final `json` file will have the metadata. Mandatory to put `True` for now.
 
