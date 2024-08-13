@@ -136,7 +136,7 @@ nexport.export(
 `model`: **Required**. A PyTorch model instance.
 
 `acceptable_engine_tag`: **Required**. A string version number indicates an acceptable inference engine release. Because nexport generates a JSON file that is intimately tied to Inference-Engine, the JSON keywords may change when Inference-Engine's file format changes. 
-The is why this parameter is here to indicate the version track of inference engine.
+This parameter indicates an Inference-Engine `git` tag known to be able to read and write the nexport output.  Other Inference-Engine revisions might also be compatible.
 
 `file_type`: **Required**. Mandatory to put `json_exp` for now
 
