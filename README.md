@@ -133,7 +133,10 @@ nexport.export(
               include_metadata=True, model_name="YOUR_PYTORCH_MODEL_NAME", model_author="YOUR_PYTORCH_MODEL_AUTHOR", activation_function="gelu",
               using_skip_connections=False)
 ```
-`model`: **Required**. A pytroch model instance.
+`model`: **Required**. A PyTorch model instance.
+
+`acceptable_engine_tag`: **Required**. A string version number indicates the acceptable inference engine release. Since nexport generates the json file that is highly tied to the inference engine, the json keywords may subject to change whenever something happen on inference engine. 
+The is why this parameter is here to indicate the version track of inference engine.
 
 `file_type`: **Required**. Mandatory to put `json_exp` for now
 
